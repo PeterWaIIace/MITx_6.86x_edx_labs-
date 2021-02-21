@@ -117,8 +117,19 @@ def check_hinge_loss_single():
             ex_name, p1.hinge_loss_single,
             exp_res, feature_vector, label, theta, theta_0):
         return
-    log(green("PASS"), ex_name, "")
+    
 
+    feature_vector = np.array([8.93576926, 6.37940442, 4.61812819, 7.33137017, 4.20581408, 5.18551575, 4.66027536, 5.69199292, 8.45399986, 4.24416532])
+    label = 1
+    theta = np.array([1.36209425, 2.86163305, 2.60606961, 5.04238974, 8.88863686, 2.85169451, 4.83497519, 3.97977974, 7.61047251, 3.99495631])
+    theta_0 =  1
+    exp_res = 0 
+    if check_real(
+            ex_name, p1.hinge_loss_single,
+            exp_res, feature_vector, label, theta, theta_0):
+        return
+
+    log(green("PASS"), ex_name, "")
 
 def check_hinge_loss_full():
     ex_name = "Hinge loss full"
@@ -126,6 +137,23 @@ def check_hinge_loss_full():
     feature_vector = np.array([[1, 2], [1, 2]])
     label, theta, theta_0 = np.array([1, 1]), np.array([-1, 1]), -0.2
     exp_res = 1 - 0.8
+    if check_real(
+            ex_name, p1.hinge_loss_full,
+            exp_res, feature_vector, label, theta, theta_0):
+        return
+
+    #hinge loss 3 - feature matrxi shape (7, 5)
+    feature_vector = np.array([[ 3.70752282, 0.11251751, 3.63609098, -1.82673257, 3.46592548],
+                            [ 1.34824939, -0.34295169,  1.19526055,  0.07293385, -0.53298844],
+                            [ 2.95954691, -0.27806892,  3.27449194, -0.73060663, -0.95582739],
+                            [ 1.31340351, -1.54873403, 1.20388711, -1.40314974, 1.11317539],
+                            [ 3.13463404, -0.94393889, -1.82457749, -1.87405909, -1.03870385],
+                            [-0.4079261, 0.44207802, 2.25305111, 0.51183395, 2.90853109],
+                            [-1.24735041, -0.33819895, 1.13234472, 2.57892447, -0.00610873]]) 
+    label = np.array([ 1.,  1., -1., -1., -1.,  1., -1.])
+    theta = np.array([-1.89448558, -0.17152266, -0.40119769,  1.64531582, -1.35101277])
+    theta_0 = -0.32 
+    exp_res = 4.639621101290755 # just increased precision 4.6396211
     if check_real(
             ex_name, p1.hinge_loss_full,
             exp_res, feature_vector, label, theta, theta_0):

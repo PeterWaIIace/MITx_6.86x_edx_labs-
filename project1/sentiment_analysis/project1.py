@@ -34,6 +34,9 @@ def hinge_loss_single(feature_vector, label, theta, theta_0):
     given data point and parameters.
     """
     # Your code here
+    # x = 1 - label*(theta@feature_vector.T + theta_0)
+    x = 1 - label*(np.dot(theta,feature_vector.T) + theta_0)
+    return np.where(x<=0,0,x)
     raise NotImplementedError
 
 
@@ -56,6 +59,7 @@ def hinge_loss_full(feature_matrix, labels, theta, theta_0):
     loss across all of the points in the feature matrix.
     """
     # Your code here
+    return sum(hinge_loss_single(feature_matrix,labels,theta,theta_0))/feature_matrix.shape[0]
     raise NotImplementedError
 
 
@@ -82,7 +86,11 @@ def perceptron_single_step_update(
     completed.
     """
     # Your code here
-    raise NotImplementedError
+    if(label*(feature_vector@current_theta + current_theta_0)<=0):
+        return (current_theta + label*feature_vector ,current_theta_0 + label)  
+    else: 
+        return (current_theta, current_theta_0)
+    raise NotImplementedError 
 
 
 def perceptron(feature_matrix, labels, T):
