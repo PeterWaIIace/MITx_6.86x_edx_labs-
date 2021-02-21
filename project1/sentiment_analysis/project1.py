@@ -118,11 +118,11 @@ def perceptron(feature_matrix, labels, T):
     theta_0, the offset classification parameter, after T iterations through
     the feature matrix.
     """
-    # Your code here
+    theta, theta_0 = np.zeros(feature_matrix.shape[1]), 0 
     for t in range(T):
         for i in get_order(feature_matrix.shape[0]):
-            # Your code here
-            pass
+            theta,theta_0 = perceptron_single_step_update(feature_matrix[i,:],labels[i],theta,theta_0)
+    return (theta,theta_0)
     raise NotImplementedError
 
 
@@ -156,6 +156,15 @@ def average_perceptron(feature_matrix, labels, T):
     find a sum and divide.
     """
     # Your code here
+    theta, theta_0 = np.zeros(feature_matrix.shape[1]), 0 
+    theta_sum, theta_0_sum = np.zeros(feature_matrix.shape[1]), 0
+    n = feature_matrix.shape[0]
+    for t in range(T):
+        for i in get_order(feature_matrix.shape[0]):
+            theta,theta_0 = perceptron_single_step_update(feature_matrix[i,:],labels[i],theta,theta_0)
+            theta_sum += theta
+            theta_0_sum += theta_0
+    return (theta_sum/(n*T),theta_0_sum/(n*T))
     raise NotImplementedError
 
 
