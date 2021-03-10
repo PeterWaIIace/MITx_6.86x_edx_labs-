@@ -31,6 +31,9 @@ def compute_probabilities(X, theta, temp_parameter):
     Returns:
         H - (k, n) NumPy array, where each entry H[j][i] is the probability that X[i] is labeled as j
     """
+    vals = theta.dot(X.T)/temp_parameter
+    es = np.exp(vals - np.max(vals,axis=0))
+    return es/np.sum(es,axis=0)
     #YOUR CODE HERE
     raise NotImplementedError
 
@@ -50,6 +53,12 @@ def compute_cost_function(X, Y, theta, lambda_factor, temp_parameter):
     Returns
         c - the cost value (scalar)
     """
+    # reg = lambda_factor/2 *sum(sum(theta**2,axis=0),axis=1)
+    print("Y: ",Y,"theta_shape: ", theta.shape)
+    for i in range(Y.shape[0]):
+        for j in range(theta.shape[0]):
+            print(int(Y[i] == j))
+     # np.log(compute_probabilities(X,theta,temp_parameter))
     #YOUR CODE HERE
     raise NotImplementedError
 
