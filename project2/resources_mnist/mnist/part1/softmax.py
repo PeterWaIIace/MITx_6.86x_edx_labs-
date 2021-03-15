@@ -54,12 +54,17 @@ def compute_cost_function(X, Y, theta, lambda_factor, temp_parameter):
         c - the cost value (scalar)
     """
     # reg = lambda_factor/2 *sum(sum(theta**2,axis=0),axis=1)
-    print("Y: ",Y,"theta_shape: ", theta.shape)
-    for i in range(Y.shape[0]):
-        for j in range(theta.shape[0]):
-            print(int(Y[i] == j))
-     # np.log(compute_probabilities(X,theta,temp_parameter))
-    #YOUR CODE HERE
+    
+    Ymat = sparse.coo_matrix(([1]*Y.shape[0], (Y, range(Y.shape[0]))), shape=(theta.shape[0],Y.shape[0])).toarray()
+
+    probabilities = np.log(compute_probabilities(X,theta,temp_parameter))
+    probabilities[probabilities > 1E308] = 0 # filtering inf
+    probabilities[probabilities < -1E308] = 0 # filtering -inf
+  
+    loss_param = -1/(X.shape[0])*np.sum(np.sum(Ymat*probabilities,axis=0))
+    regularization_param = lambda_factor/2*np.sum(np.sum(theta**2,axis=0))
+    c = loss_param + regularization_param
+    return c
     raise NotImplementedError
 
 def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_parameter):
@@ -80,6 +85,11 @@ def run_gradient_descent_iteration(X, Y, theta, alpha, lambda_factor, temp_param
         theta - (k, d) NumPy array that is the final value of parameters theta
     """
     #YOUR CODE HERE
+    # Ymat - (k,n)
+    Ymat = sparse.coo_matrix(([1]*Y.shape[0], (Y, range(Y.shape[0]))), shape=(theta.shape[0],Y.shape[0])).toarray()
+
+    probabilities = (compute_probabilities(X,theta,temp_parameter))
+    return theta - alpha*(-1/(temp_parameter*Y.shape[0])*X.T.dot((Ymat-probabilities).T).T + lambda_factor*theta)
     raise NotImplementedError
 
 def update_y(train_y, test_y):
@@ -100,6 +110,7 @@ def update_y(train_y, test_y):
                     for each datapoint in the test set
     """
     #YOUR CODE HERE
+    return train_y%3, test_y%3
     raise NotImplementedError
 
 def compute_test_error_mod3(X, Y, theta, temp_parameter):
@@ -118,6 +129,8 @@ def compute_test_error_mod3(X, Y, theta, temp_parameter):
         test_error - the error rate of the classifier (scalar)
     """
     #YOUR CODE HERE
+    assigned_labels = get_classification(X, theta, temp_parameter)
+    return 1 - np.mean(assigned_labels%3 == Y)
     raise NotImplementedError
 
 def softmax_regression(X, Y, temp_parameter, alpha, lambda_factor, k, num_iterations):
