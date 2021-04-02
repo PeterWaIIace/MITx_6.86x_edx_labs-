@@ -12,14 +12,13 @@ import math
         One output neuron whose activation function is the identity function.
 """
 
-
 def rectified_linear_unit(x):
     """ Returns the ReLU of x, or the maximum between 0 and x."""
-    # TODO
+    return x if x > 0 else 0
 
 def rectified_linear_unit_derivative(x):
     """ Returns the derivative of ReLU."""
-    # TODO
+    return 1 if x > 0 else 0
 
 def output_layer_activation(x):
     """ Linear function, returns input as is. """
@@ -55,37 +54,50 @@ class NeuralNetwork():
         input_values = np.matrix([[x1],[x2]]) # 2 by 1
 
         # Calculate the input and activation of the hidden layer
-        hidden_layer_weighted_input = # TODO (3 by 1 matrix)
-        hidden_layer_activation = # TODO (3 by 1 matrix)
-
-        output =  # TODO
-        activated_output = # TODO
-
+        # TODO (3 by 1 matrix) - checked
+        hidden_layer_weighted_input = self.input_to_hidden_weights.dot(input_values)+self.biases
+        # TODO (3 by 1 matrix) - checked
+        hidden_layer_activation = np.vectorize(rectified_linear_unit)(hidden_layer_weighted_input)
+        
+        output =  self.hidden_to_output_weights.dot(hidden_layer_activation)
+        activated_output = output_layer_activation(output)
+        
         ### Backpropagation ###
 
         # Compute gradients
-        output_layer_error = # TODO
-        hidden_layer_error = # TODO (3 by 1 matrix)
-
-        bias_gradients = # TODO
-        hidden_to_output_weight_gradients = # TODO
-        input_to_hidden_weight_gradients = # TODO
-
+        # TODO 
+        output_layer_error = 1/2*(y-activated_output)**2 
+        doutput_layer_error= -1*(y-activated_output)
+        # TODO (3 by 1 matrix)
+        # Your code has 'output_layer_activation_derivative' 0 times, must be at least 1. pointless!
+        # Your code has 'rectified_linear_unit_derivative' 0 times, must be at least 1. pointless!
+        hidden_layer_error = hidden_layer_activation.dot(1/2*(y-activated_output)) 
+        
+        # TODO
+        bias_gradients = (doutput_layer_error*self.hidden_to_output_weights).T
+        hidden_to_output_weight_gradients = (np.vectorize(output_layer_activation_derivative)(hidden_layer_weighted_input)*doutput_layer_error).T
+        input_to_hidden_weight_gradients = (input_values*doutput_layer_error).dot(np.vectorize(rectified_linear_unit_derivative)(self.hidden_to_output_weights)).T
+        
         # Use gradients to adjust weights and biases using gradient descent
-        self.biases = # TODO
-        self.input_to_hidden_weights = # TODO
-        self.hidden_to_output_weights = # TODO
+
+        # TODO
+        self.biases -= self.learning_rate*bias_gradients
+        self.input_to_hidden_weights -= self.learning_rate*input_to_hidden_weight_gradients
+        self.hidden_to_output_weights -= self.learning_rate*hidden_to_output_weight_gradients
 
     def predict(self, x1, x2):
 
         input_values = np.matrix([[x1],[x2]])
 
         # Compute output for a single input(should be same as the forward propagation in training)
-        hidden_layer_weighted_input = # TODO
-        hidden_layer_activation = # TODO
-        output = # TODO
-        activated_output = # TODO
+        hidden_layer_weighted_input = self.input_to_hidden_weights.dot(input_values)+self.biases 
+        # TODO (3 by 1 matrix)
+        hidden_layer_activation = np.vectorize(rectified_linear_unit)(hidden_layer_weighted_input)
 
+        output =  self.hidden_to_output_weights.dot(hidden_layer_activation)
+        activated_output = output_layer_activation(output)
+        
+        # print(activated_output,output,hidden_layer_activation,hidden_layer_weighted_input,self.input_to_hidden_weights.dot(input_values),self.biases)
         return activated_output.item()
 
     # Run this to train your neural network once you complete the train method
@@ -103,7 +115,7 @@ class NeuralNetwork():
             if abs(self.predict(point[0], point[1]) - 7*point[0]) < 0.1:
                 print("Test Passed")
             else:
-                print("Point ", point[0], point[1], " failed to be predicted correctly.")
+                print("Point ", point[0], point[1], " failed to be predicted correctly.",abs(self.predict(point[0], point[1]) - 7*point[0]))
                 return
 
 x = NeuralNetwork()
@@ -111,4 +123,5 @@ x = NeuralNetwork()
 x.train_neural_network()
 
 # UNCOMMENT THE LINE BELOW TO TEST YOUR NEURAL NETWORK
-# x.test_neural_network()
+x.test_neural_network()
+

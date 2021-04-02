@@ -13,19 +13,34 @@ nb_epoch = 30
 num_classes = 10
 img_rows, img_cols = 42, 28 # input image dimensions
 
-
-
 class CNN(nn.Module):
 
     def __init__(self, input_dimension):
         super(CNN, self).__init__()
+        print("input_dimension:",input_dimension,"\n")
         # TODO initialize model layers here
+        self.Conv1 = nn.Conv2d(1, 8, (3, 3))
+        self.ReLU1 = nn.ReLU()
+        self.MaxPool2d1 = nn.MaxPool2d((2, 2))
+        self.Conv2 = nn.Conv2d(8,16,(3,3))
+        self.ReLU2 = nn.ReLU()
+        self.MaxPool2d2 = nn.MaxPool2d((2, 2))
+        self.flatten = Flatten()
+        self.Linear1 = nn.Linear(720,128)
+        self.Drop1 = nn.Dropout2d(0.5)
+        self.Linear_fd = nn.Linear(128,10)
+        self.Linear_sd = nn.Linear(128,10)
 
     def forward(self, x):
 
         # TODO use model layers to predict the two digits
+        x1 = self.MaxPool2d1(self.ReLU1(self.Conv1(x)))
+        x2 = self.MaxPool2d2(self.ReLU2(self.Conv2(x1)))
+        xf = self.flatten(x2)
+        x3 = self.Linear1(xf)
+        xD= self.Drop1(x3)
 
-        return out_first_digit, out_second_digit
+        return self.Linear_fd(xD), self.Linear_sd(xD)
 
 def main():
     X_train, y_train, X_test, y_test = U.get_data(path_to_data_dir, use_mini_dataset)
@@ -52,7 +67,7 @@ def main():
     model = CNN(input_dimension) # TODO add proper layers to CNN class above
 
     # Train
-    train_model(train_batches, dev_batches, model)
+    train_model(train_batches, dev_batches, model,lr=0.1,momentum=0.15)
 
     ## Evaluate the model on test data
     loss, acc = run_epoch(test_batches, model.eval(), None)
